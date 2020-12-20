@@ -5,7 +5,7 @@ import javax.swing.JFrame;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        new GameInterface(100);
+        new GameInterface();
 
         // String sentence_to_server;
         // String sentence_from_server;
