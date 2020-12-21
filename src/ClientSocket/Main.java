@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         GameInterface gameInterface = new GameInterface();
-
+        System.out.println("ClientSocket.Main.main()");
         String sentence_to_server;
         String sentence_from_server;
 
