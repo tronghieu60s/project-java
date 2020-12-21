@@ -1,5 +1,7 @@
-package ClientSocket;
+package ClientSocket.Views;
 
+import Helpers.Helpers;
+import ClientSocket.Views.Matrix;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;

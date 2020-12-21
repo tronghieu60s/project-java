@@ -1,5 +1,7 @@
 package ClientSocket;
 
+import ClientSocket.Views.GameInterface;
+import Helpers.ConfigSocket;
 import java.io.*;
 import java.net.Socket;
 
@@ -19,7 +21,7 @@ public class Main {
         sentence_to_server = inFromUser.readLine();
 
         //Tạo socket cho client kết nối đến server qua ID address và port number
-        Socket clientSocket = new Socket("127.0.0.1", Config.ConfigSocket.port);
+        Socket clientSocket = new Socket("127.0.0.1", ConfigSocket.port);
 
         //Tạo OutputStream nối với Socket
         DataOutputStream outToServer

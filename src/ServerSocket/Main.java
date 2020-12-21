@@ -9,7 +9,7 @@ public class Main {
         String sentence_to_client;
         
         //Tạo socket server, chờ tại cổng '6543'
-        ServerSocket welcomeSocket = new ServerSocket(Config.ConfigSocket.port);
+        ServerSocket welcomeSocket = new ServerSocket(Helpers.ConfigSocket.port);
         
         while(true) {
             //chờ yêu cầu từ client

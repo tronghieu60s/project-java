@@ -1,4 +1,4 @@
-package ClientSocket;
+package ClientSocket.Views;
 
 public class Matrix {
     
