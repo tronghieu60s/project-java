@@ -27,7 +27,7 @@ public class Matrix {
         for (int i = N / 2; i < N; i++) {
             b[i] = b[i - N / 2];
         }
-        for (int i = 0; i < m * n; i++) {
+        for (int i = 2; i < m * n; i++) {
             c[i] = (int) (Math.random() * 1000000);
         }
         for (int i = 0; i < N - 1; i++) {

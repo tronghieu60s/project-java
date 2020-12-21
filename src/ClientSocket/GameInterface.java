@@ -24,7 +24,7 @@ public final class GameInterface extends JFrame implements ActionListener {
 
     // Size Game
     int sizeXGame = 3;
-    int sizeYGame = 7;
+    int sizeYGame = 8;
     boolean tick[][] = new boolean[sizeXGame][sizeYGame];
     int arrMatrix[][] = new int[sizeXGame][sizeYGame];
 
@@ -99,7 +99,7 @@ public final class GameInterface extends JFrame implements ActionListener {
                 btnImage[i][j].setIcon(helpers.getSwingIcon(0));
 
                 // Handle Another
-                arrMatrix[i][j] = (int) (Math.random() * 40 + 1);
+                arrMatrix[i][j] = (int) (Math.random() * 2 + 1);
                 tick[i][j] = true;
             }
         }
@@ -132,6 +132,11 @@ public final class GameInterface extends JFrame implements ActionListener {
             btnImage[preX][preY].setBorder(null);
 
             btnImage[X][Y].setIcon(helpers.getSwingIcon(-1));
+            hit++;
+            if (hit == sizeXGame * sizeYGame / 2) {
+                timer.stop();
+                timeProcess.stop();
+            }
         } else {
             tick[X][Y] = tick[preX][preY] = true;
             btnImage[X][Y].setIcon(helpers.getSwingIcon(0));
