@@ -1,15 +1,26 @@
 package ClientSocket.Controllers;
 
 import ClientSocket.Views.GameView;
+import Helpers.ConfigSocket;
 import Helpers.Helpers;
 import Helpers.Matrix;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 public class GameController {
 
+    Socket clientSocket = null;
+    BufferedReader inFromServer;
+    DataOutputStream outToServer;
+
+    // MVC
     GameView gameView;
 
     // Function Support
@@ -28,7 +39,14 @@ public class GameController {
     int objectX, objectY;
     int objectPreX, objectPreY;
 
-    public GameController(GameView gameView) {
+    BufferedReader bf = null;
+
+    public GameController(GameView gameView) throws IOException {
+        this.clientSocket = new Socket("127.0.0.1", ConfigSocket.port);
+        this.outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        this.inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+        // ------------------------- VIEW -------------------------
         int sizeXGame = gameView.getSizeXGame();
         int sizeYGame = gameView.getSizeYGame();
 
@@ -41,7 +59,7 @@ public class GameController {
                 // Handle Matrix
                 arrMatrix[i][j] = (int) (Math.random() * 2 + 1);
                 tick[i][j] = true;
-                
+
                 gameView.getBtnImage()[i][j].addActionListener(handleClickButton());
             }
         }
@@ -53,7 +71,11 @@ public class GameController {
 
         timer = new Timer(240, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                handleOpenImage();
+                try {
+                    handleOpenImage();
+                } catch (IOException ex) {
+                    System.out.println("Not Handle Open Image");
+                }
                 timer.stop();
             }
         });
@@ -78,14 +100,32 @@ public class GameController {
                 }
             }
         });
-        
+
         gameView.setVisible(true);
+
+        // Listening Socket
+        while (true) {
+            if (clientSocket != null) {
+                String msg = "";
+                while ((msg = inFromServer.readLine()) != null) {
+                    System.out.println(msg);
+                }
+            }
+        }
     }
 
-    public void handleOpenImage() {
+    public void handleOpenImage() throws IOException {
         int X = objectX, Y = objectY;
         int preX = objectPreX, preY = objectPreY;
 
+        outToServer.writeBytes(X + "");
+        outToServer.writeBytes(Y + "");
+        // Xuống Dòng + Xóa bộ đệm
+        outToServer.write(13);
+        outToServer.write(10);
+        outToServer.flush();
+        
+        //outToServer.writeInt(Y);
         if (id == arrMatrix[X][Y]) {
             // Set Image To Black
             gameView.getBtnImage()[preX][preY].setIcon(helpers.getSwingIcon(-1));
@@ -133,4 +173,5 @@ public class GameController {
             }
         };
     }
+
 }
