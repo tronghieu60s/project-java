@@ -98,8 +98,8 @@ public class GameController {
             gameView.getBtnImage()[X][Y].setIcon(helpers.getSwingIcon(-1));
         } else {
             tick[X][Y] = tick[preX][preY] = true;
-            gameView.getBtnImage()[X][Y].setIcon(helpers.getSwingIcon(0));
-            gameView.getBtnImage()[preX][preY].setIcon(helpers.getSwingIcon(0));
+            gameView.getBtnImage()[X][Y].setIcon(helpers.getSwingIcon(-2));
+            gameView.getBtnImage()[preX][preY].setIcon(helpers.getSwingIcon(-2));
         }
     }
 

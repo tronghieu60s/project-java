@@ -103,7 +103,7 @@ public final class GameView extends JFrame implements ActionListener {
                 btnImage[i][j].setActionCommand(i + " " + j);
                 btnImage[i][j].addActionListener(this);
                 btnImage[i][j].setBackground(Color.black);
-                btnImage[i][j].setIcon(helpers.getSwingIcon(0));
+                btnImage[i][j].setIcon(helpers.getSwingIcon(-2));
             }
         }
 
