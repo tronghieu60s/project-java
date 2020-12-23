@@ -41,16 +41,19 @@ public class GameController {
 
     BufferedReader bf = null;
 
-    public GameController(GameView gameView) throws IOException {
+    public GameController() throws IOException {
         this.clientSocket = new Socket("127.0.0.1", ConfigSocket.port);
         this.outToServer = new DataOutputStream(clientSocket.getOutputStream());
         this.inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
         // ------------------------- VIEW -------------------------
-        int sizeXGame = gameView.getSizeXGame();
-        int sizeYGame = gameView.getSizeYGame();
+        String SIZEXGAME = inFromServer.readLine();
+        String SIZEYGAME = inFromServer.readLine();
+        
+        int sizeXGame = Integer.parseInt(SIZEXGAME);
+        int sizeYGame = Integer.parseInt(SIZEYGAME);
 
-        this.gameView = gameView;
+        this.gameView = new GameView(sizeXGame, sizeYGame, 1200);
         this.tick = new boolean[sizeXGame][sizeYGame];
         this.arrMatrix = new int[sizeXGame][sizeYGame];
 
@@ -71,11 +74,7 @@ public class GameController {
 
         timer = new Timer(240, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                try {
-                    handleOpenImage();
-                } catch (IOException ex) {
-                    System.out.println("Not Handle Open Image");
-                }
+                handleOpenImage();
                 timer.stop();
             }
         });
@@ -114,18 +113,10 @@ public class GameController {
         }
     }
 
-    public void handleOpenImage() throws IOException {
+    public void handleOpenImage(){
         int X = objectX, Y = objectY;
         int preX = objectPreX, preY = objectPreY;
 
-        outToServer.writeBytes(X + "");
-        outToServer.writeBytes(Y + "");
-        // Xuống Dòng + Xóa bộ đệm
-        outToServer.write(13);
-        outToServer.write(10);
-        outToServer.flush();
-        
-        //outToServer.writeInt(Y);
         if (id == arrMatrix[X][Y]) {
             // Set Image To Black
             gameView.getBtnImage()[preX][preY].setIcon(helpers.getSwingIcon(-1));
