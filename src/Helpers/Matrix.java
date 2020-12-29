@@ -51,13 +51,14 @@ public class Matrix {
     }
     
     public void showMatrix(int x, int y, int[][] arr) {
+        System.out.println("--- New Matrix Game ---");
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
                 System.out.printf("%3d", arr[i][j]);
             }
             System.out.println();
         }
-        System.out.println("-----------------");
+        System.out.println("-----------------------");
         System.out.println();
     }
     

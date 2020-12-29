@@ -74,7 +74,6 @@ public class GameController {
                 timer.stop();
             }
         });
-
         timeProcess = new Timer(100, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 time += 1;
@@ -95,7 +94,7 @@ public class GameController {
                 }
             }
         });
-
+        
         gameView.setVisible(true);
 
         // Listening Socket

@@ -58,7 +58,7 @@ public class PlayerServer extends Thread {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(PlayerServer.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Player " + username + " out game!");
         }
 
     }

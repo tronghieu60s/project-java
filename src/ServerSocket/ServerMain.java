@@ -32,9 +32,7 @@ public class ServerMain {
                 while (true) {
                     GameServer game = new GameServer();
 
-                    // Create Matrix Random 2 Value With Size (X, Y)
                     matrix.createMatrix(game.getSizeXGame(), game.getSizeYGame(), game.getArrMatrix());
-                    // ShowMartrix For Debug
                     matrix.showMatrix(game.getSizeXGame(), game.getSizeYGame(), game.getArrMatrix());
 
                     PlayerServer player1 = new PlayerServer(serverSocket.accept(), game, "test1");
