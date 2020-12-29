@@ -1,8 +1,8 @@
 package ServerSocket;
 
 public class GameServer {
-    private final int sizeXGame = 7;
-    private final int sizeYGame = 9;
+    private final int sizeXGame = 3;
+    private final int sizeYGame = 6;
     private final int arrMatrix[][];
     private boolean tick[][];
 

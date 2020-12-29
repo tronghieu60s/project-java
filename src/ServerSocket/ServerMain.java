@@ -1,12 +1,15 @@
 package ServerSocket;
 
+import Helpers.Matrix;
 import java.io.*;
 import java.net.ServerSocket;
 
 public class ServerMain {
 
-    ServerSocket serverSocket;
-    public Thread serverThread;
+    private Matrix matrix = new Matrix();
+
+    private ServerSocket serverSocket;
+    private Thread serverThread;
 
     public static void main(String[] args) throws IOException {
         ServerMain main = new ServerMain();
@@ -28,6 +31,11 @@ public class ServerMain {
                 System.out.println("Server is running...");
                 while (true) {
                     GameServer game = new GameServer();
+
+                    // Create Matrix Random 2 Value With Size (X, Y)
+                    matrix.createMatrix(game.getSizeXGame(), game.getSizeYGame(), game.getArrMatrix());
+                    // ShowMartrix For Debug
+                    matrix.showMatrix(game.getSizeXGame(), game.getSizeYGame(), game.getArrMatrix());
 
                     PlayerServer player1 = new PlayerServer(serverSocket.accept(), game, "test1");
                     PlayerServer player2 = new PlayerServer(serverSocket.accept(), game, "test2");

@@ -7,49 +7,50 @@ import Helpers.Matrix;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 public class GameController {
 
-    Socket clientSocket = null;
-    BufferedReader inFromServer;
-    DataOutputStream outToServer;
-
-    // MVC
-    GameView gameView;
+    // SOCKET JAVA
+    private Socket clientSocket = null;
+    private BufferedReader inFromServer;
+    private PrintWriter outToServer;
 
     // Function Support
-    Helpers helpers = new Helpers();
-    Matrix matrix = new Matrix();
+    private Helpers helpers = new Helpers();
+    private Matrix matrix = new Matrix();
+
+    // MVC
+    private GameView gameView;
 
     // Matrix
-    boolean tick[][];
-    int arrMatrix[][];
+    private boolean tick[][];
+    private int arrMatrix[][];
 
     // Components
-    int time = 0;
-    Timer timer, timeProcess;
+    private int time = 0;
+    private Timer timer, timeProcess;
 
-    int count = 0, id;
-    int objectX, objectY;
-    int objectPreX, objectPreY;
+    private int count = 0, id;
+    private int objectX, objectY;
+    private int objectPreX, objectPreY;
 
     BufferedReader bf = null;
 
     public GameController() throws IOException {
         this.clientSocket = new Socket("127.0.0.1", ConfigSocket.port);
-        this.outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        this.outToServer = new PrintWriter(clientSocket.getOutputStream(), true);
         this.inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
         // ------------------------- VIEW -------------------------
         String SIZEXGAME = inFromServer.readLine();
         String SIZEYGAME = inFromServer.readLine();
-        
+
         int sizeXGame = Integer.parseInt(SIZEXGAME);
         int sizeYGame = Integer.parseInt(SIZEYGAME);
 
@@ -59,17 +60,12 @@ public class GameController {
 
         for (int i = 0; i < sizeXGame; i++) {
             for (int j = 0; j < sizeYGame; j++) {
-                // Handle Matrix
-                arrMatrix[i][j] = (int) (Math.random() * 2 + 1);
+                arrMatrix[i][j] = Integer.parseInt(inFromServer.readLine());
                 tick[i][j] = true;
-
                 gameView.getBtnImage()[i][j].addActionListener(handleClickButton());
             }
         }
 
-        // Create Matrix Random 2 Value With Size (X, Y)
-        matrix.createMatrix(sizeXGame, sizeYGame, arrMatrix);
-        // ShowMartrix For Debug
         matrix.showMatrix(sizeXGame, sizeYGame, arrMatrix);
 
         timer = new Timer(240, new ActionListener() {
@@ -107,13 +103,29 @@ public class GameController {
             if (clientSocket != null) {
                 String msg = "";
                 while ((msg = inFromServer.readLine()) != null) {
-                    System.out.println(msg);
+                    String[] split = msg.split("-");
+                    if (split.length == 3) {
+                        int X = Integer.parseInt(split[1]),
+                                Y = Integer.parseInt(split[2]);
+                        gameView.getBtnImage()[X][Y].setIcon(helpers.getSwingIcon(arrMatrix[X][Y]));
+                        if (Integer.parseInt(split[0]) == 0) {
+                            id = arrMatrix[X][Y];
+                            objectPreX = X;
+                            objectPreY = Y;
+                        } else {
+                            objectX = X;
+                            objectY = Y;
+                            timer.start();
+                        }
+                        count = 1 - count;
+                        tick[X][Y] = false;
+                    }
                 }
             }
         }
     }
 
-    public void handleOpenImage(){
+    public void handleOpenImage() {
         int X = objectX, Y = objectY;
         int preX = objectPreX, preY = objectPreY;
 
@@ -149,6 +161,7 @@ public class GameController {
 
                 if (tick[X][Y]) {
                     gameView.getBtnImage()[X][Y].setIcon(helpers.getSwingIcon(arrMatrix[X][Y]));
+                    outToServer.println(count + "-" + X + "-" + Y);
                     if (count == 0) {
                         id = arrMatrix[X][Y];
                         objectPreX = X;
@@ -164,5 +177,4 @@ public class GameController {
             }
         };
     }
-
 }

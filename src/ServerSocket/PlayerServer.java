@@ -5,44 +5,61 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PlayerServer extends Thread {
 
-    String username;
-    PlayerServer opponent;
-    Socket socket;
-    BufferedReader input;
-    PrintWriter output;
+    private String username;
+    private PlayerServer opponent;
+
+    // SOCKET JAVA
+    private Socket serverSocket;
+    private BufferedReader inFromClient;
+    private PrintWriter outToClient;
 
     public void setOpponent(PlayerServer opponent) {
         this.opponent = opponent;
     }
 
     public PlayerServer(Socket socket, GameServer gameServer, String username) {
-        this.socket = socket;
+        this.serverSocket = socket;
         this.username = username;
 
         try {
-            input = new BufferedReader(
+            inFromClient = new BufferedReader(
                     new InputStreamReader(socket.getInputStream()));
-            output = new PrintWriter(socket.getOutputStream(), true);
-            System.out.println("USER CONNECT: " + username);
-            output.println(gameServer.getSizeXGame());
-            output.println(gameServer.getSizeYGame());
+            outToClient = new PrintWriter(socket.getOutputStream(), true);
+            System.out.println("User " + username + " connected!");
+            outToClient.println(gameServer.getSizeXGame());
+            outToClient.println(gameServer.getSizeYGame());
+
+            for (int i = 0; i < gameServer.getSizeXGame(); i++) {
+                for (int j = 0; j < gameServer.getSizeYGame(); j++) {
+                    outToClient.println(gameServer.getArrMatrix()[i][j]);
+                }
+            }
         } catch (IOException e) {
-            System.out.println("Player died: " + e);
+            System.out.println("Player " + opponent.username + " out game!");
         }
     }
 
     public void run() {
-        output.println("MESSAGE All is connected");
-        if (username == "test1") {
-            output.println("MESSAGE First turn");
-        }
-        
         try {
-            socket.close();
-        } catch (IOException e) {
+            outToClient.println("Another player connected!");
+
+            // Listening Socket
+            while (true) {
+                if (serverSocket != null) {
+                    String msg = "";
+                    while ((msg = inFromClient.readLine()) != null) {
+                        opponent.outToClient.println(msg);
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(PlayerServer.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 }
