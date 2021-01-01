@@ -83,7 +83,7 @@ public final class GameView extends JFrame implements ActionListener {
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setSize(sizeYGame * 120, sizeXGame * 170 + 60);
+        this.setSize(sizeYGame * 120, sizeXGame * 120 + 60);
     }
 
     public void initInterface() {

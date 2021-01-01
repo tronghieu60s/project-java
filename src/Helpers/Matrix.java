@@ -1,10 +1,10 @@
 package Helpers;
 
 public class Matrix {
-    
+
     public void createMatrix(int m, int n, int[][] arr) {
         // Number Of Image = 50
-        int images = 50;
+        int images = Config.numOfImage;
         int N = m * n;
         int b[] = new int[m * n + images];
         int c[] = new int[m * n + images];
@@ -49,9 +49,9 @@ public class Matrix {
             }
         }
     }
-    
+
     public void showMatrix(int x, int y, int[][] arr) {
-        System.out.println("\n--- New Matrix Game ---");
+        System.out.println("-----------------------");
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
                 System.out.printf("%3d", arr[i][j]);
@@ -61,5 +61,5 @@ public class Matrix {
         System.out.println("-----------------------");
         System.out.println();
     }
-    
+
 }
