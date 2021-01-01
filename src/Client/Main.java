@@ -1,6 +1,6 @@
-package ClientSocket;
+package Client;
 
-import ClientSocket.Controllers.GameController;
+import Client.Controllers.GameController;
 
 public class Main {
 

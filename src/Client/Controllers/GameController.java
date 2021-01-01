@@ -1,25 +1,19 @@
-package ClientSocket.Controllers;
+package Client.Controllers;
 
-import ClientSocket.Views.GameView;
-import Helpers.ConfigSocket;
+import Client.Views.GameView;
+import Helpers.Config;
 import Helpers.Helpers;
 import Helpers.Matrix;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 public class GameController {
-
-    // SOCKET JAVA
-    private Socket clientSocket = null;
-    private BufferedReader inFromServer;
-    private PrintWriter outToServer;
 
     // Function Support
     private Helpers helpers = new Helpers();
@@ -36,37 +30,29 @@ public class GameController {
     private int time = 0;
     private Timer timer, timeProcess;
 
-    private int count = 0, id;
+    private int count = 0, hit = 0, id;
     private int objectX, objectY;
     private int objectPreX, objectPreY;
 
     BufferedReader bf = null;
 
     public GameController() throws IOException {
-        this.clientSocket = new Socket("127.0.0.1", ConfigSocket.port);
-        this.outToServer = new PrintWriter(clientSocket.getOutputStream(), true);
-        this.inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        int sizeXGame = Config.sizeXGame;
+        int sizeYGame = Config.sizeYGame;
 
-        // ------------------------- VIEW -------------------------
-        String SIZEXGAME = inFromServer.readLine();
-        String SIZEYGAME = inFromServer.readLine();
-
-        int sizeXGame = Integer.parseInt(SIZEXGAME);
-        int sizeYGame = Integer.parseInt(SIZEYGAME);
-
-        this.gameView = new GameView(sizeXGame, sizeYGame, 1200);
+        this.gameView = new GameView(sizeXGame, sizeYGame, Config.time);
         this.tick = new boolean[sizeXGame][sizeYGame];
         this.arrMatrix = new int[sizeXGame][sizeYGame];
 
+        matrix.createMatrix(sizeXGame, sizeYGame, arrMatrix);
+        matrix.showMatrix(sizeXGame, sizeYGame, arrMatrix);
+
         for (int i = 0; i < sizeXGame; i++) {
             for (int j = 0; j < sizeYGame; j++) {
-                arrMatrix[i][j] = Integer.parseInt(inFromServer.readLine());
                 tick[i][j] = true;
                 gameView.getBtnImage()[i][j].addActionListener(handleClickButton());
             }
         }
-
-        matrix.showMatrix(sizeXGame, sizeYGame, arrMatrix);
 
         timer = new Timer(240, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -87,41 +73,20 @@ public class GameController {
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                             null, null);
                     if (select == 0) {
-                        //handleNewGame();
+                        try {
+                            gameView.dispose();
+                            new GameController();
+                        } catch (IOException ex) {
+                            Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     } else {
                         System.exit(0);
                     }
                 }
             }
         });
-        
-        gameView.setVisible(true);
 
-        // Listening Socket
-        while (true) {
-            if (clientSocket != null) {
-                String msg = "";
-                while ((msg = inFromServer.readLine()) != null) {
-                    String[] split = msg.split("-");
-                    if (split.length == 3) {
-                        int X = Integer.parseInt(split[1]),
-                                Y = Integer.parseInt(split[2]);
-                        gameView.getBtnImage()[X][Y].setIcon(helpers.getSwingIcon(arrMatrix[X][Y]));
-                        if (Integer.parseInt(split[0]) == 0) {
-                            id = arrMatrix[X][Y];
-                            objectPreX = X;
-                            objectPreY = Y;
-                        } else {
-                            objectX = X;
-                            objectY = Y;
-                            timer.start();
-                        }
-                        count = 1 - count;
-                        tick[X][Y] = false;
-                    }
-                }
-            }
-        }
+        gameView.setVisible(true);
     }
 
     public void handleOpenImage() {
@@ -138,6 +103,26 @@ public class GameController {
             gameView.getBtnImage()[preX][preY].setBorder(null);
 
             gameView.getBtnImage()[X][Y].setIcon(helpers.getSwingIcon(-1));
+
+            hit++;
+            if (hit == Config.sizeXGame * Config.sizeYGame / 2) {
+                timer.stop();
+                timeProcess.stop();
+                int select = JOptionPane.showOptionDialog(null, "Chiến thắng!\n"
+                        + "Bạn có muốn chơi lại không?", "Thông báo",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                        null, null);
+                if (select == 0) {
+                    try {
+                        gameView.dispose();
+                        new GameController();
+                    } catch (IOException ex) {
+                        Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    System.exit(0);
+                }
+            }
         } else {
             tick[X][Y] = tick[preX][preY] = true;
             gameView.getBtnImage()[X][Y].setIcon(helpers.getSwingIcon(-2));
@@ -160,7 +145,6 @@ public class GameController {
 
                 if (tick[X][Y]) {
                     gameView.getBtnImage()[X][Y].setIcon(helpers.getSwingIcon(arrMatrix[X][Y]));
-                    outToServer.println(count + "-" + X + "-" + Y);
                     if (count == 0) {
                         id = arrMatrix[X][Y];
                         objectPreX = X;

@@ -1,4 +1,4 @@
-package ClientSocket.Views;
+package Client.Views;
 
 import Helpers.Helpers;
 import java.awt.Color;
