@@ -1,15 +1,11 @@
 package Client.Controllers;
 
 import Client.Views.GameView;
-import Helpers.Config;
 import Helpers.Helpers;
 import Helpers.Matrix;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
@@ -27,6 +23,7 @@ public class GameController {
     private int arrMatrix[][];
 
     // Components
+    private int sizeXGame = 0, sizeYGame = 0;
     private int time = 0;
     private Timer timer, timeProcess;
 
@@ -34,13 +31,11 @@ public class GameController {
     private int objectX, objectY;
     private int objectPreX, objectPreY;
 
-    BufferedReader bf = null;
+    public GameController(int sizeXGame, int sizeYGame, int timeGame) throws IOException {
+        this.sizeXGame = sizeXGame;
+        this.sizeYGame = sizeYGame;
 
-    public GameController() throws IOException {
-        int sizeXGame = Config.sizeXGame;
-        int sizeYGame = Config.sizeYGame;
-
-        this.gameView = new GameView(sizeXGame, sizeYGame, Config.time);
+        this.gameView = new GameView(sizeXGame, sizeYGame, timeGame);
         this.tick = new boolean[sizeXGame][sizeYGame];
         this.arrMatrix = new int[sizeXGame][sizeYGame];
 
@@ -73,12 +68,8 @@ public class GameController {
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                             null, null);
                     if (select == 0) {
-                        try {
-                            gameView.dispose();
-                            new GameController();
-                        } catch (IOException ex) {
-                            Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        gameView.dispose();
+                        new StartController();
                     } else {
                         System.exit(0);
                     }
@@ -105,7 +96,7 @@ public class GameController {
             gameView.getBtnImage()[X][Y].setIcon(helpers.getSwingIcon(-1));
 
             hit++;
-            if (hit == Config.sizeXGame * Config.sizeYGame / 2) {
+            if (hit == sizeXGame * sizeYGame / 2) {
                 timer.stop();
                 timeProcess.stop();
                 int select = JOptionPane.showOptionDialog(null, "Chiến thắng!\n"
@@ -113,12 +104,8 @@ public class GameController {
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                         null, null);
                 if (select == 0) {
-                    try {
-                        gameView.dispose();
-                        new GameController();
-                    } catch (IOException ex) {
-                        Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    gameView.dispose();
+                    new StartController();
                 } else {
                     System.exit(0);
                 }

@@ -1,10 +1,10 @@
 package Client;
 
-import Client.Controllers.GameController;
+import Client.Controllers.StartController;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        new GameController();
+        new StartController();
     }
 }
